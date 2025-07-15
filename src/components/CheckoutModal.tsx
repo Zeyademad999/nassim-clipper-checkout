@@ -1,9 +1,15 @@
 
 import React from 'react';
-import { BillItem } from '../pages/Index';
 import { X, Download, FileText, FileSpreadsheet } from 'lucide-react';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
+
+interface BillItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
 
 interface CheckoutModalProps {
   items: BillItem[];
@@ -12,6 +18,7 @@ interface CheckoutModalProps {
   total: number;
   customerName: string;
   barberName: string;
+  serviceDate: string;
   onClose: () => void;
   onComplete: () => void;
 }
@@ -23,6 +30,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   total,
   customerName,
   barberName,
+  serviceDate,
   onClose,
   onComplete,
 }) => {
@@ -42,16 +50,20 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     doc.text('Receipt', 20, 45);
     doc.text(`Receipt #: ${receiptNumber}`, 20, 55);
     doc.text(`Date: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`, 20, 65);
+    doc.text(`Service Date: ${serviceDate}`, 20, 75);
     
+    let yPos = 85;
     if (customerName) {
-      doc.text(`Customer: ${customerName}`, 20, 75);
+      doc.text(`Customer: ${customerName}`, 20, yPos);
+      yPos += 10;
     }
     if (barberName) {
-      doc.text(`Barber: ${barberName}`, 20, 85);
+      doc.text(`Barber: ${barberName}`, 20, yPos);
+      yPos += 10;
     }
     
     // Services
-    let yPos = customerName || barberName ? 105 : 85;
+    yPos += 10;
     doc.setFont(undefined, 'bold');
     doc.text('Services:', 20, yPos);
     
@@ -82,6 +94,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       [''],
       [`Receipt #: ${receiptNumber}`],
       [`Date: ${currentDate.toLocaleDateString()} ${currentDate.toLocaleTimeString()}`],
+      [`Service Date: ${serviceDate}`],
       ...(customerName ? [[`Customer: ${customerName}`]] : []),
       ...(barberName ? [[`Barber: ${barberName}`]] : []),
       [''],
@@ -114,12 +127,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-t-2xl">
+        <div className="p-6 border-b border-gray-200 bg-black text-white rounded-t-2xl">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Checkout Complete!</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
             >
               <X className="h-6 w-6" />
             </button>
@@ -129,48 +142,49 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         {/* Receipt Details */}
         <div className="p-6">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FileText className="h-8 w-8 text-green-600" />
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FileText className="h-8 w-8 text-black" />
             </div>
-            <h3 className="text-xl font-semibold text-slate-800 mb-2">Receipt #{receiptNumber}</h3>
-            <p className="text-slate-600">{currentDate.toLocaleDateString()} at {currentDate.toLocaleTimeString()}</p>
+            <h3 className="text-xl font-semibold text-black mb-2">Receipt #{receiptNumber}</h3>
+            <p className="text-gray-600">{currentDate.toLocaleDateString()} at {currentDate.toLocaleTimeString()}</p>
+            <p className="text-gray-600">Service Date: {serviceDate}</p>
           </div>
 
           {(customerName || barberName) && (
-            <div className="mb-6 p-4 bg-slate-50 rounded-lg">
-              {customerName && <p className="text-slate-700"><strong>Customer:</strong> {customerName}</p>}
-              {barberName && <p className="text-slate-700"><strong>Barber:</strong> {barberName}</p>}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              {customerName && <p className="text-black"><strong>Customer:</strong> {customerName}</p>}
+              {barberName && <p className="text-black"><strong>Barber:</strong> {barberName}</p>}
             </div>
           )}
 
           {/* Services List */}
           <div className="mb-6">
-            <h4 className="font-semibold text-slate-800 mb-3">Services</h4>
+            <h4 className="font-semibold text-black mb-3">Services</h4>
             <div className="space-y-2">
               {items.map((item) => (
-                <div key={item.id} className="flex justify-between items-center py-2 border-b border-slate-100">
+                <div key={item.id} className="flex justify-between items-center py-2 border-b border-gray-100">
                   <div>
-                    <p className="font-medium text-slate-800">{item.name}</p>
-                    <p className="text-sm text-slate-600">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
+                    <p className="font-medium text-black">{item.name}</p>
+                    <p className="text-sm text-gray-600">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
                   </div>
-                  <p className="font-semibold text-slate-800">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="font-semibold text-black">${(item.price * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Totals */}
-          <div className="mb-6 p-4 bg-slate-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
             <div className="space-y-2">
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-slate-600">
+              <div className="flex justify-between text-gray-600">
                 <span>Tax (8%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-xl font-bold text-slate-800 pt-2 border-t border-slate-200">
+              <div className="flex justify-between text-xl font-bold text-black pt-2 border-t border-gray-200">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>
               </div>
@@ -198,7 +212,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           {/* Complete Button */}
           <button
             onClick={handleComplete}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-colors"
+            className="w-full bg-black hover:bg-gray-800 text-white font-bold py-4 px-6 rounded-lg transition-colors"
           >
             Complete & Start New Bill
           </button>
