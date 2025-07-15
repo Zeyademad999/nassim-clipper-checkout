@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Users, DollarSign, TrendingUp, FileText } from 'lucide-react';
 
 interface Service {
@@ -22,17 +22,28 @@ interface AdminDashboardProps {
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
-  services,
-  barbers,
+  services: initialServices,
+  barbers: initialBarbers,
   onUpdateServices,
   onUpdateBarbers,
   onLogout
 }) => {
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
   const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'barbers' | 'reports'>('overview');
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
   const [newService, setNewService] = useState({ name: '', price: 0 });
   const [newBarber, setNewBarber] = useState({ name: '' });
+
+  // Update local state when props change
+  useEffect(() => {
+    setServices(initialServices);
+  }, [initialServices]);
+
+  useEffect(() => {
+    setBarbers(initialBarbers);
+  }, [initialBarbers]);
 
   const addService = () => {
     if (newService.name && newService.price > 0) {
@@ -41,7 +52,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         name: newService.name,
         price: newService.price,
       };
-      onUpdateServices([...services, service]);
+      const updatedServices = [...services, service];
+      setServices(updatedServices);
+      onUpdateServices(updatedServices);
       setNewService({ name: '', price: 0 });
     }
   };
@@ -50,12 +63,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const updated = services.map(service => 
       service.id === id ? { ...service, ...updatedService } : service
     );
+    setServices(updated);
     onUpdateServices(updated);
     setEditingService(null);
   };
 
   const deleteService = (id: string) => {
-    onUpdateServices(services.filter(service => service.id !== id));
+    const updated = services.filter(service => service.id !== id);
+    setServices(updated);
+    onUpdateServices(updated);
   };
 
   const addBarber = () => {
@@ -64,7 +80,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         id: Date.now().toString(),
         name: newBarber.name,
       };
-      onUpdateBarbers([...barbers, barber]);
+      const updatedBarbers = [...barbers, barber];
+      setBarbers(updatedBarbers);
+      onUpdateBarbers(updatedBarbers);
       setNewBarber({ name: '' });
     }
   };
@@ -73,12 +91,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     const updated = barbers.map(barber => 
       barber.id === id ? { ...barber, ...updatedBarber } : barber
     );
+    setBarbers(updated);
     onUpdateBarbers(updated);
     setEditingBarber(null);
   };
 
   const deleteBarber = (id: string) => {
-    onUpdateBarbers(barbers.filter(barber => barber.id !== id));
+    const updated = barbers.filter(barber => barber.id !== id);
+    setBarbers(updated);
+    onUpdateBarbers(updated);
   };
 
   return (

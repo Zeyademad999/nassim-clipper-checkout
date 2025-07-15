@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ServiceCard } from './ServiceCard';
 import { BillSummary } from './BillSummary';
 import { CheckoutModal } from './CheckoutModal';
@@ -26,13 +26,51 @@ interface POSSystemProps {
   onLogout: () => void;
 }
 
-const POSSystem: React.FC<POSSystemProps> = ({ services, barbers, onLogout }) => {
+const POSSystem: React.FC<POSSystemProps> = ({ services: initialServices, barbers: initialBarbers, onLogout }) => {
+  const [services, setServices] = useState<Service[]>(initialServices);
+  const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
   const [billItems, setBillItems] = useState<BillItem[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [selectedBarber, setSelectedBarber] = useState('');
   const [serviceDate, setServiceDate] = useState(new Date().toISOString().split('T')[0]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Update local state when props change
+  useEffect(() => {
+    setServices(initialServices);
+  }, [initialServices]);
+
+  useEffect(() => {
+    setBarbers(initialBarbers);
+  }, [initialBarbers]);
+
+  // Listen for localStorage changes for real-time updates
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'services' && e.newValue) {
+        setServices(JSON.parse(e.newValue));
+        // Update billItems if a service was modified
+        setBillItems(prevItems => {
+          const updatedServices = JSON.parse(e.newValue);
+          return prevItems.map(item => {
+            const updatedService = updatedServices.find((s: Service) => s.id === item.id);
+            return updatedService ? { ...updatedService, quantity: item.quantity } : item;
+          }).filter(item => updatedServices.some((s: Service) => s.id === item.id));
+        });
+      } else if (e.key === 'barbers' && e.newValue) {
+        setBarbers(JSON.parse(e.newValue));
+        // Reset selected barber if it was deleted
+        const updatedBarbers = JSON.parse(e.newValue);
+        if (selectedBarber && !updatedBarbers.some((b: Barber) => b.name === selectedBarber)) {
+          setSelectedBarber('');
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [selectedBarber]);
 
   const addService = (service: Service) => {
     setBillItems(prev => {
