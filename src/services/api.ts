@@ -13,7 +13,7 @@ import type {
 } from '../types/database';
 
 // Base API configuration
-const API_BASE_URL = '/api'; // Will be replaced with actual backend URL
+const API_BASE_URL = 'http://localhost:3001/api'; // Backend server URL
 
 class ApiService {
   private async request<T>(
@@ -32,10 +32,10 @@ class ApiService {
       const data = await response.json();
       
       if (!response.ok) {
-        return { success: false, error: data.message || 'Request failed' };
+        return { success: false, error: data.error || 'Request failed' };
       }
 
-      return { success: true, data };
+      return data;
     } catch (error) {
       console.error('API request failed:', error);
       return { 

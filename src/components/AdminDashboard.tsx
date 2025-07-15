@@ -1,6 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus, Edit2, Trash2, Users, DollarSign, TrendingUp, FileText } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
 
 interface Service {
   id: string;
@@ -19,87 +20,150 @@ interface AdminDashboardProps {
   onUpdateServices: (services: Service[]) => void;
   onUpdateBarbers: (barbers: Barber[]) => void;
   onLogout: () => void;
+  // Database operation functions
+  createService: (service: Omit<Service, 'id'>) => Promise<any>;
+  updateService: (id: string, service: Partial<Service>) => Promise<any>;
+  deleteService: (id: string) => Promise<any>;
+  createBarber: (barber: Omit<Barber, 'id'>) => Promise<any>;
+  updateBarber: (id: string, barber: Partial<Barber>) => Promise<any>;
+  deleteBarber: (id: string) => Promise<any>;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({
-  services: initialServices,
-  barbers: initialBarbers,
-  onUpdateServices,
-  onUpdateBarbers,
-  onLogout
+  services,
+  barbers,
+  onLogout,
+  createService,
+  updateService,
+  deleteService,
+  createBarber,
+  updateBarber,
+  deleteBarber
 }) => {
-  const [services, setServices] = useState<Service[]>(initialServices);
-  const [barbers, setBarbers] = useState<Barber[]>(initialBarbers);
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'overview' | 'services' | 'barbers' | 'reports'>('overview');
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
   const [newService, setNewService] = useState({ name: '', price: 0 });
   const [newBarber, setNewBarber] = useState({ name: '' });
 
-  // Update local state when props change
-  useEffect(() => {
-    setServices(initialServices);
-  }, [initialServices]);
-
-  useEffect(() => {
-    setBarbers(initialBarbers);
-  }, [initialBarbers]);
-
-  const addService = () => {
+  const handleAddService = async () => {
     if (newService.name && newService.price > 0) {
-      const service: Service = {
-        id: Date.now().toString(),
+      const result = await createService({
         name: newService.name,
         price: newService.price,
-      };
-      const updatedServices = [...services, service];
-      setServices(updatedServices);
-      onUpdateServices(updatedServices);
-      setNewService({ name: '', price: 0 });
+      });
+      
+      if (result.success) {
+        setNewService({ name: '', price: 0 });
+        toast({
+          title: "Service Added",
+          description: `${newService.name} has been added successfully`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to add service",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const updateService = (id: string, updatedService: Partial<Service>) => {
-    const updated = services.map(service => 
-      service.id === id ? { ...service, ...updatedService } : service
-    );
-    setServices(updated);
-    onUpdateServices(updated);
-    setEditingService(null);
+  const handleUpdateService = async (id: string, updatedService: Partial<Service>) => {
+    const result = await updateService(id, updatedService);
+    
+    if (result.success) {
+      setEditingService(null);
+      toast({
+        title: "Service Updated",
+        description: "Service has been updated successfully",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to update service",
+        variant: "destructive",
+      });
+    }
   };
 
-  const deleteService = (id: string) => {
-    const updated = services.filter(service => service.id !== id);
-    setServices(updated);
-    onUpdateServices(updated);
+  const handleDeleteService = async (id: string) => {
+    if (confirm('Are you sure you want to delete this service?')) {
+      const result = await deleteService(id);
+      
+      if (result.success) {
+        toast({
+          title: "Service Deleted",
+          description: "Service has been deleted successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete service",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
-  const addBarber = () => {
+  const handleAddBarber = async () => {
     if (newBarber.name) {
-      const barber: Barber = {
-        id: Date.now().toString(),
+      const result = await createBarber({
         name: newBarber.name,
-      };
-      const updatedBarbers = [...barbers, barber];
-      setBarbers(updatedBarbers);
-      onUpdateBarbers(updatedBarbers);
-      setNewBarber({ name: '' });
+      });
+      
+      if (result.success) {
+        setNewBarber({ name: '' });
+        toast({
+          title: "Barber Added",
+          description: `${newBarber.name} has been added successfully`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to add barber",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const updateBarber = (id: string, updatedBarber: Partial<Barber>) => {
-    const updated = barbers.map(barber => 
-      barber.id === id ? { ...barber, ...updatedBarber } : barber
-    );
-    setBarbers(updated);
-    onUpdateBarbers(updated);
-    setEditingBarber(null);
+  const handleUpdateBarber = async (id: string, updatedBarber: Partial<Barber>) => {
+    const result = await updateBarber(id, updatedBarber);
+    
+    if (result.success) {
+      setEditingBarber(null);
+      toast({
+        title: "Barber Updated",
+        description: "Barber has been updated successfully",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to update barber",
+        variant: "destructive",
+      });
+    }
   };
 
-  const deleteBarber = (id: string) => {
-    const updated = barbers.filter(barber => barber.id !== id);
-    setBarbers(updated);
-    onUpdateBarbers(updated);
+  const handleDeleteBarber = async (id: string) => {
+    if (confirm('Are you sure you want to delete this barber?')) {
+      const result = await deleteBarber(id);
+      
+      if (result.success) {
+        toast({
+          title: "Barber Deleted",
+          description: "Barber has been deleted successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete barber",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   return (
@@ -201,7 +265,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     className="w-32 px-3 py-2 border border-gray-300 rounded-md"
                   />
                   <button
-                    onClick={addService}
+                    onClick={handleAddService}
                     className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
@@ -255,7 +319,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           {editingService?.id === service.id ? (
                             <div className="flex gap-2">
                               <button
-                                onClick={() => updateService(service.id, editingService)}
+                                onClick={() => handleUpdateService(service.id, editingService)}
                                 className="text-green-600 hover:text-green-900"
                               >
                                 Save
@@ -276,7 +340,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 <Edit2 className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => deleteService(service.id)}
+                                onClick={() => handleDeleteService(service.id)}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -308,7 +372,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
                   />
                   <button
-                    onClick={addBarber}
+                    onClick={handleAddBarber}
                     className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 flex items-center gap-2"
                   >
                     <Plus className="h-4 w-4" />
@@ -347,7 +411,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           {editingBarber?.id === barber.id ? (
                             <div className="flex gap-2">
                               <button
-                                onClick={() => updateBarber(barber.id, editingBarber)}
+                                onClick={() => handleUpdateBarber(barber.id, editingBarber)}
                                 className="text-green-600 hover:text-green-900"
                               >
                                 Save
@@ -368,7 +432,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                                 <Edit2 className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => deleteBarber(barber.id)}
+                                onClick={() => handleDeleteBarber(barber.id)}
                                 className="text-red-600 hover:text-red-900"
                               >
                                 <Trash2 className="h-4 w-4" />
