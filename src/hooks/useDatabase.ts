@@ -1,10 +1,9 @@
-
 // Custom hooks for database operations
 // These hooks will replace localStorage operations when SQLite backend is ready
 
 import { useState, useEffect } from 'react';
 import { apiService } from '../services/api';
-import type { DatabaseService, DatabaseBarber, DatabaseTransaction } from '../types/database';
+import type { DatabaseService, DatabaseBarber, DatabaseTransaction, DatabaseUser } from '../types/database';
 
 // Hook for services management
 export const useServices = () => {
@@ -152,7 +151,7 @@ export const useBarbers = () => {
 
 // Hook for authentication
 export const useAuth = () => {
-  const [user, setUser] = useState<DatabaseService | null>(null);
+  const [user, setUser] = useState<DatabaseUser | null>(null);
   const [loading, setLoading] = useState(false);
 
   const login = async (username: string, password: string) => {
