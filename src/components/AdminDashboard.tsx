@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, Users, DollarSign, TrendingUp, FileText, BarChart3, Calendar, Settings } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { BarChart3, Settings, Users, FileText } from 'lucide-react';
+import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import StatsGrid from './dashboard/StatsGrid';
@@ -45,31 +45,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Modern Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-xl bg-background/80 border-b border-border/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <BarChart3 className="h-5 w-5 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                <h1 className="text-xl font-semibold text-foreground">
                   Nassim Select Barber
                 </h1>
                 <p className="text-sm text-muted-foreground">Admin Dashboard</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="animate-pulse">
+            <div className="flex items-center space-x-3">
+              <Badge variant="secondary">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
                 Online
               </Badge>
               <Button 
                 onClick={onLogout}
                 variant="outline"
-                className="hover:bg-destructive hover:text-destructive-foreground transition-all duration-300"
               >
                 Logout
               </Button>
@@ -78,11 +77,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Modern Navigation */}
-        <Card className="mb-8 overflow-hidden bg-card/50 backdrop-blur-sm border-border/50">
-          <CardContent className="p-2">
-            <nav className="flex space-x-2">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        {/* Navigation */}
+        <Card className="mb-6">
+          <CardContent className="p-1">
+            <nav className="flex space-x-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -90,14 +89,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     key={item.key}
                     onClick={() => setActiveTab(item.key as any)}
                     variant={activeTab === item.key ? "default" : "ghost"}
-                    className={`flex items-center space-x-2 transition-all duration-300 ${
-                      activeTab === item.key 
-                        ? 'bg-primary text-primary-foreground shadow-lg scale-105' 
-                        : 'hover:bg-muted/50 hover:scale-105'
-                    }`}
+                    className="flex items-center space-x-2"
                   >
                     <Icon className="h-4 w-4" />
-                    <span className="hidden sm:inline">{item.label}</span>
+                    <span>{item.label}</span>
                   </Button>
                 );
               })}
@@ -105,42 +100,39 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </CardContent>
         </Card>
 
-        {/* Animated Content */}
-        <div className="animate-fade-in">
+        {/* Content */}
+        <div>
           {activeTab === 'overview' && (
-            <div className="space-y-8">
+            <div className="space-y-6">
               <StatsGrid services={services} barbers={barbers} />
               
               {/* Quick Actions */}
-              <Card className="bg-gradient-to-r from-card via-card to-card/80 border-border/50 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <span>Quick Actions</span>
-                  </CardTitle>
-                  <CardDescription>Manage your barbershop efficiently</CardDescription>
-                </CardHeader>
-                <CardContent>
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Button 
                       onClick={() => setActiveTab('services')}
-                      className="h-20 flex-col space-y-2 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300"
+                      variant="outline"
+                      className="h-16 flex-col space-y-1"
                     >
-                      <Settings className="h-6 w-6" />
+                      <Settings className="h-5 w-5" />
                       <span>Manage Services</span>
                     </Button>
                     <Button 
                       onClick={() => setActiveTab('barbers')}
-                      className="h-20 flex-col space-y-2 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300"
+                      variant="outline"
+                      className="h-16 flex-col space-y-1"
                     >
-                      <Users className="h-6 w-6" />
+                      <Users className="h-5 w-5" />
                       <span>Manage Barbers</span>
                     </Button>
                     <Button 
                       onClick={() => setActiveTab('reports')}
-                      className="h-20 flex-col space-y-2 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300"
+                      variant="outline"
+                      className="h-16 flex-col space-y-1"
                     >
-                      <FileText className="h-6 w-6" />
+                      <FileText className="h-5 w-5" />
                       <span>View Reports</span>
                     </Button>
                   </div>

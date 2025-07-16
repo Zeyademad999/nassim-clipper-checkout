@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FileText, Download, Calendar, TrendingUp, BarChart3, PieChart, DollarSign, Users } from 'lucide-react';
+import { FileText, Download, Calendar, BarChart3, PieChart, DollarSign, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -16,47 +16,39 @@ const ReportsSection: React.FC = () => {
     {
       title: "Daily Sales Report",
       description: "Today's revenue and transaction summary",
-      icon: DollarSign,
-      color: "from-green-500 to-emerald-600",
-      bgColor: "bg-green-500/10"
+      icon: DollarSign
     },
     {
       title: "Service Performance",
       description: "Most popular services and trends",
-      icon: TrendingUp,
-      color: "from-blue-500 to-cyan-600",
-      bgColor: "bg-blue-500/10"
+      icon: BarChart3
     },
     {
       title: "Barber Statistics",
       description: "Individual barber performance metrics",
-      icon: Users,
-      color: "from-purple-500 to-pink-600",
-      bgColor: "bg-purple-500/10"
+      icon: Users
     },
     {
       title: "Monthly Overview",
       description: "Complete monthly business summary",
-      icon: BarChart3,
-      color: "from-orange-500 to-red-600",
-      bgColor: "bg-orange-500/10"
+      icon: PieChart
     }
   ];
 
   const quickActions = [
-    { label: "Today's Receipts", icon: FileText, color: "blue" },
-    { label: "Weekly Summary", icon: Calendar, color: "green" },
-    { label: "Export Data", icon: Download, color: "purple" },
-    { label: "Analytics Dashboard", icon: PieChart, color: "orange" }
+    { label: "Today's Receipts", icon: FileText },
+    { label: "Weekly Summary", icon: Calendar },
+    { label: "Export Data", icon: Download },
+    { label: "Analytics Dashboard", icon: PieChart }
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Date Range Selection */}
-      <Card className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20 shadow-xl">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5 text-primary" />
+            <Calendar className="h-5 w-5" />
             <span>Generate Custom Report</span>
           </CardTitle>
           <CardDescription>Select date range to generate detailed reports</CardDescription>
@@ -70,7 +62,6 @@ const ReportsSection: React.FC = () => {
                 type="date"
                 value={dateRange.from}
                 onChange={(e) => setDateRange({ ...dateRange, from: e.target.value })}
-                className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-2">
@@ -80,11 +71,10 @@ const ReportsSection: React.FC = () => {
                 type="date"
                 value={dateRange.to}
                 onChange={(e) => setDateRange({ ...dateRange, to: e.target.value })}
-                className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="flex items-end">
-              <Button className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-300">
+              <Button className="w-full">
                 <FileText className="h-4 w-4 mr-2" />
                 Generate Report
               </Button>
@@ -94,32 +84,24 @@ const ReportsSection: React.FC = () => {
       </Card>
 
       {/* Report Types Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {reportTypes.map((report, index) => {
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {reportTypes.map((report) => {
           const Icon = report.icon;
           return (
-            <Card 
-              key={report.title}
-              className="hover:shadow-xl transition-all duration-500 hover:scale-105 border-border/50 group cursor-pointer animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
+            <Card key={report.title} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${report.color} group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="h-6 w-6 text-white" />
+                  <div className="p-3 bg-muted rounded-lg">
+                    <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
+                    <h3 className="font-semibold text-lg">
                       {report.title}
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       {report.description}
                     </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="mt-3 hover:bg-primary hover:text-primary-foreground transform hover:scale-105 transition-all duration-200"
-                    >
+                    <Button variant="outline" size="sm" className="mt-3">
                       <Download className="h-3 w-3 mr-1" />
                       Download
                     </Button>
@@ -132,24 +114,20 @@ const ReportsSection: React.FC = () => {
       </div>
 
       {/* Quick Actions */}
-      <Card className="shadow-xl border-border/50">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <TrendingUp className="h-5 w-5 text-primary" />
-            <span>Quick Actions</span>
-          </CardTitle>
+          <CardTitle>Quick Actions</CardTitle>
           <CardDescription>Frequently used report actions</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => {
+            {quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Button
                   key={action.label}
                   variant="outline"
-                  className={`h-20 flex-col space-y-2 hover:bg-${action.color}-50 hover:text-${action.color}-600 hover:border-${action.color}-300 transform hover:scale-105 transition-all duration-300 animate-fade-in`}
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  className="h-20 flex-col space-y-2"
                 >
                   <Icon className="h-5 w-5" />
                   <span className="text-xs text-center">{action.label}</span>
@@ -161,26 +139,23 @@ const ReportsSection: React.FC = () => {
       </Card>
 
       {/* Analytics Preview */}
-      <Card className="bg-gradient-to-r from-card via-card to-card/80 border-border/50 shadow-xl">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <PieChart className="h-5 w-5 text-primary" />
-            <span>Analytics Preview</span>
-          </CardTitle>
+          <CardTitle>Analytics Preview</CardTitle>
           <CardDescription>Quick insights into your business performance</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 rounded-lg bg-muted/30">
-              <div className="text-2xl font-bold text-primary mb-2">$0</div>
+            <div className="text-center p-4 bg-muted/30 rounded-lg">
+              <div className="text-2xl font-bold mb-2">$0</div>
               <div className="text-sm text-muted-foreground">Total Revenue</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-muted/30">
-              <div className="text-2xl font-bold text-green-600 mb-2">0</div>
+            <div className="text-center p-4 bg-muted/30 rounded-lg">
+              <div className="text-2xl font-bold mb-2">0</div>
               <div className="text-sm text-muted-foreground">Transactions</div>
             </div>
-            <div className="text-center p-4 rounded-lg bg-muted/30">
-              <div className="text-2xl font-bold text-blue-600 mb-2">0</div>
+            <div className="text-center p-4 bg-muted/30 rounded-lg">
+              <div className="text-2xl font-bold mb-2">0</div>
               <div className="text-sm text-muted-foreground">Customers</div>
             </div>
           </div>

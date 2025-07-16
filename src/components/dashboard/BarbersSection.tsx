@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-import { Avatar } from '../ui/avatar';
 
 interface Barber {
   id: string;
@@ -50,12 +48,12 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Add Barber Card */}
-      <Card className="bg-gradient-to-r from-blue-500/5 via-blue-500/10 to-blue-500/5 border-blue-500/20 shadow-xl">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <UserPlus className="h-5 w-5 text-blue-600" />
+            <UserPlus className="h-5 w-5" />
             <span>Add New Barber</span>
           </CardTitle>
           <CardDescription>Add a new barber to your team</CardDescription>
@@ -70,14 +68,10 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                 placeholder="e.g., Ahmed Hassan"
                 value={newBarber.name}
                 onChange={(e) => setNewBarber({ name: e.target.value })}
-                className="transition-all duration-300 focus:ring-2 focus:ring-blue-500/50"
               />
             </div>
             <div className="flex items-end">
-              <Button
-                onClick={addBarber}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transform hover:scale-105 transition-all duration-300"
-              >
+              <Button onClick={addBarber}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Barber
               </Button>
@@ -87,16 +81,12 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
       </Card>
 
       {/* Barbers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {barbers.map((barber, index) => (
-          <Card 
-            key={barber.id} 
-            className="shadow-lg hover:shadow-xl border-border/50 transition-all duration-300 hover:scale-105 animate-fade-in group"
-            style={{ animationDelay: `${index * 100}ms` }}
-          >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {barbers.map((barber) => (
+          <Card key={barber.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="flex items-center space-x-4 mb-4">
+                <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center font-semibold">
                   {getInitials(barber.name)}
                 </div>
                 <div className="flex-1">
@@ -105,24 +95,23 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                       type="text"
                       value={editingBarber.name}
                       onChange={(e) => setEditingBarber({ ...editingBarber, name: e.target.value })}
-                      className="font-medium"
                     />
                   ) : (
-                    <h3 className="font-semibold text-lg group-hover:text-primary transition-colors">
-                      {barber.name}
-                    </h3>
+                    <div>
+                      <h3 className="font-semibold">{barber.name}</h3>
+                      <p className="text-sm text-muted-foreground">Professional Barber</p>
+                    </div>
                   )}
-                  <p className="text-sm text-muted-foreground">Professional Barber</p>
                 </div>
               </div>
               
-              <div className="mt-4 flex space-x-2">
+              <div className="flex space-x-2">
                 {editingBarber?.id === barber.id ? (
                   <>
                     <Button
                       size="sm"
                       onClick={() => updateBarber(barber.id, editingBarber)}
-                      className="flex-1 bg-green-500 hover:bg-green-600 transform hover:scale-105 transition-all duration-200"
+                      className="flex-1"
                     >
                       <Save className="h-3 w-3 mr-1" />
                       Save
@@ -131,7 +120,7 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                       size="sm"
                       variant="outline"
                       onClick={() => setEditingBarber(null)}
-                      className="flex-1 hover:bg-muted transform hover:scale-105 transition-all duration-200"
+                      className="flex-1"
                     >
                       <X className="h-3 w-3 mr-1" />
                       Cancel
@@ -143,7 +132,7 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                       size="sm"
                       variant="outline"
                       onClick={() => setEditingBarber(barber)}
-                      className="flex-1 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transform hover:scale-105 transition-all duration-200"
+                      className="flex-1"
                     >
                       <Edit2 className="h-3 w-3 mr-1" />
                       Edit
@@ -152,7 +141,7 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                       size="sm"
                       variant="outline"
                       onClick={() => deleteBarber(barber.id)}
-                      className="flex-1 hover:bg-red-50 hover:text-red-600 hover:border-red-300 transform hover:scale-105 transition-all duration-200"
+                      className="flex-1"
                     >
                       <Trash2 className="h-3 w-3 mr-1" />
                       Remove
@@ -166,12 +155,12 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
       </div>
 
       {/* Summary Card */}
-      <Card className="bg-gradient-to-r from-purple-500/5 via-purple-500/10 to-purple-500/5 border-purple-500/20">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                <Users className="h-5 w-5" />
               </div>
               <div>
                 <h3 className="font-semibold">Team Summary</h3>
@@ -179,7 +168,7 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
               </div>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-purple-600">{barbers.length}</div>
+              <div className="text-3xl font-bold">{barbers.length}</div>
               <div className="text-sm text-muted-foreground">Active Barbers</div>
             </div>
           </div>

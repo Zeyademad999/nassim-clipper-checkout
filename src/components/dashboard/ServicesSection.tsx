@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plus, Edit2, Trash2, Save, X, DollarSign, Tag } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Tag } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -47,12 +47,12 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Add Service Card */}
-      <Card className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 border-primary/20 shadow-xl">
+      <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Tag className="h-5 w-5 text-primary" />
+            <Tag className="h-5 w-5" />
             <span>Add New Service</span>
           </CardTitle>
           <CardDescription>Create a new service for your barbershop</CardDescription>
@@ -67,7 +67,6 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                 placeholder="e.g., Hair Cut"
                 value={newService.name}
                 onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="space-y-2">
@@ -78,14 +77,10 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                 placeholder="25.00"
                 value={newService.price || ''}
                 onChange={(e) => setNewService({ ...newService, price: parseFloat(e.target.value) })}
-                className="transition-all duration-300 focus:ring-2 focus:ring-primary/50"
               />
             </div>
             <div className="flex items-end">
-              <Button
-                onClick={addService}
-                className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary transform hover:scale-105 transition-all duration-300"
-              >
+              <Button onClick={addService} className="w-full">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Service
               </Button>
@@ -95,37 +90,29 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
       </Card>
 
       {/* Services Table */}
-      <Card className="shadow-xl border-border/50">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <DollarSign className="h-5 w-5 text-primary" />
-            <span>Services Management</span>
-          </CardTitle>
+          <CardTitle>Services Management</CardTitle>
           <CardDescription>Manage your barbershop services and pricing</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-muted/50">
-                <TableHead className="font-semibold">Service Name</TableHead>
-                <TableHead className="font-semibold">Price</TableHead>
-                <TableHead className="font-semibold">Actions</TableHead>
+              <TableRow>
+                <TableHead>Service Name</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead className="w-32">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {services.map((service, index) => (
-                <TableRow 
-                  key={service.id} 
-                  className="hover:bg-muted/50 transition-colors duration-200 animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` }}
-                >
+              {services.map((service) => (
+                <TableRow key={service.id}>
                   <TableCell>
                     {editingService?.id === service.id ? (
                       <Input
                         type="text"
                         value={editingService.name}
                         onChange={(e) => setEditingService({ ...editingService, name: e.target.value })}
-                        className="min-w-0"
                       />
                     ) : (
                       <span className="font-medium">{service.name}</span>
@@ -143,7 +130,7 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                         />
                       </div>
                     ) : (
-                      <span className="font-semibold text-green-600">${service.price.toFixed(2)}</span>
+                      <span className="font-semibold">${service.price.toFixed(2)}</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -152,7 +139,6 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                         <Button
                           size="sm"
                           onClick={() => updateService(service.id, editingService)}
-                          className="bg-green-500 hover:bg-green-600 transform hover:scale-105 transition-all duration-200"
                         >
                           <Save className="h-3 w-3" />
                         </Button>
@@ -160,7 +146,6 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                           size="sm"
                           variant="outline"
                           onClick={() => setEditingService(null)}
-                          className="hover:bg-muted transform hover:scale-105 transition-all duration-200"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -171,7 +156,6 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                           size="sm"
                           variant="outline"
                           onClick={() => setEditingService(service)}
-                          className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transform hover:scale-105 transition-all duration-200"
                         >
                           <Edit2 className="h-3 w-3" />
                         </Button>
@@ -179,7 +163,6 @@ const ServicesSection: React.FC<ServicesSectionProps> = ({ services, onUpdateSer
                           size="sm"
                           variant="outline"
                           onClick={() => deleteService(service.id)}
-                          className="hover:bg-red-50 hover:text-red-600 hover:border-red-300 transform hover:scale-105 transition-all duration-200"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
