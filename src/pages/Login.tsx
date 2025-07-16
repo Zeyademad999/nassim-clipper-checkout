@@ -3,44 +3,39 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginProps {
-  onLogin: (username: string, password: string) => Promise<boolean>;
+  onLogin: (userType: 'admin' | 'pos') => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!username || !password) {
-      return;
-    }
+    setError('');
 
-    setLoading(true);
-    
-    try {
-      await onLogin(username, password);
-    } catch (error) {
-      console.error('Login error:', error);
-    } finally {
-      setLoading(false);
+    if (username === 'admin' && password === 'admin') {
+      onLogin('admin');
+    } else if (username === 'floki' && password === 'floki') {
+      onLogin('pos');
+    } else {
+      setError('Invalid credentials');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-black mb-2">Nassim Select Barber</h1>
-          <p className="text-gray-600">Point of Sale System</p>
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="max-w-md w-full space-y-8 p-8">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-black">Nassim Select Barber</h2>
+          <p className="mt-2 text-gray-600">Sign in to your account</p>
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
+        
+        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="username" className="block text-sm font-medium text-black">
               Username
             </label>
             <input
@@ -48,68 +43,49 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-colors"
-              placeholder="Enter your username"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
               required
-              disabled={loading}
             />
           </div>
-
+          
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-black">
               Password
             </label>
-            <div className="relative">
+            <div className="mt-1 relative">
               <input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black transition-colors pr-12"
-                placeholder="Enter your password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-black pr-10"
                 required
-                disabled={loading}
               />
               <button
                 type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                disabled={loading}
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4 text-gray-400" />
+                ) : (
+                  <Eye className="h-4 w-4 text-gray-400" />
+                )}
               </button>
             </div>
           </div>
 
+          {error && (
+            <div className="text-red-600 text-sm">{error}</div>
+          )}
+
           <button
             type="submit"
-            disabled={loading || !username || !password}
-            className="w-full bg-black text-white py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
           >
-            {loading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Signing in...
-              </>
-            ) : (
-              'Sign In'
-            )}
+            Sign In
           </button>
         </form>
-
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <h3 className="text-sm font-medium text-gray-700 mb-3">Demo Accounts:</h3>
-          <div className="space-y-2 text-sm text-gray-600">
-            <div className="flex justify-between">
-              <span>Admin:</span>
-              <span className="font-mono">admin / admin</span>
-            </div>
-            <div className="flex justify-between">
-              <span>POS User:</span>
-              <span className="font-mono">floki / floki</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
