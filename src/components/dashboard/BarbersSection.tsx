@@ -6,23 +6,13 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 
-interface Barber {
-  id: string;
-  name: string;
-}
-
-interface BarbersSectionProps {
-  barbers: Barber[];
-  onUpdateBarbers: (barbers: Barber[]) => void;
-}
-
-const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarbers }) => {
-  const [editingBarber, setEditingBarber] = useState<Barber | null>(null);
+const BarbersSection = ({ barbers, onUpdateBarbers }) => {
+  const [editingBarber, setEditingBarber] = useState(null);
   const [newBarber, setNewBarber] = useState({ name: '' });
 
   const addBarber = () => {
     if (newBarber.name) {
-      const barber: Barber = {
+      const barber = {
         id: Date.now().toString(),
         name: newBarber.name,
       };
@@ -31,21 +21,24 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
     }
   };
 
-  const updateBarber = (id: string, updatedBarber: Partial<Barber>) => {
-    const updated = barbers.map(barber => 
+  const updateBarber = (id, updatedBarber) => {
+    const updated = barbers.map((barber) =>
       barber.id === id ? { ...barber, ...updatedBarber } : barber
     );
     onUpdateBarbers(updated);
     setEditingBarber(null);
   };
 
-  const deleteBarber = (id: string) => {
-    onUpdateBarbers(barbers.filter(barber => barber.id !== id));
+  const deleteBarber = (id) => {
+    onUpdateBarbers(barbers.filter((barber) => barber.id !== id));
   };
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
+  const getInitials = (name) =>
+    name
+      .split(' ')
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase();
 
   return (
     <div className="space-y-6">
@@ -94,7 +87,12 @@ const BarbersSection: React.FC<BarbersSectionProps> = ({ barbers, onUpdateBarber
                     <Input
                       type="text"
                       value={editingBarber.name}
-                      onChange={(e) => setEditingBarber({ ...editingBarber, name: e.target.value })}
+                      onChange={(e) =>
+                        setEditingBarber({
+                          ...editingBarber,
+                          name: e.target.value,
+                        })
+                      }
                     />
                   ) : (
                     <div>
